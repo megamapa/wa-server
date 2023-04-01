@@ -1,23 +1,32 @@
 {
   "name": "wa-server",
   "version": "1.0.0",
-  "description": "whatsapp server for tracker",
+  "description": "Whatsapp Tracker Server",
   "main": "wa-server.js",
   "scripts": {
-    "test": "server"
+    "server": "node src/wa-server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/megamapa/wa-server.git"
   },
   "keywords": [
-    "whatsapp",
-    "tracker"
+    "tracker",
+    "whatsapp"
   ],
-  "author": "Megamapa",
+  "author": "MegaMapa",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/megamapa/wa-server/issues"
   },
-  "homepage": "https://github.com/megamapa/wa-server#readme"
+  "homepage": "https://github.com/megamapa/wa-server#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ioredis": "^5.2.4",
+    "mysql": "^2.18.1",
+    "net": "^1.0.2",
+    "os": "^0.1.2",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.19.5"
+  }
 }
