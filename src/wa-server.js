@@ -57,7 +57,10 @@ const db = mysql.createPool({host:process.env.DB_host, database:process.env.DB_n
 /****************************************************************************************************/
 const { Client } = require('whatsapp-web.js');
 
-const client = new Client();
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: false }
+});
 
 client.on('qr', (qr) => {
     // Generate and scan this code with your phone
