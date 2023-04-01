@@ -1,0 +1,23 @@
+{
+  "name": "wa-server",
+  "version": "1.0.0",
+  "description": "whatsapp server for tracker",
+  "main": "wa-server.js",
+  "scripts": {
+    "test": "server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megamapa/wa-server.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "tracker"
+  ],
+  "author": "Megamapa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/megamapa/wa-server/issues"
+  },
+  "homepage": "https://github.com/megamapa/wa-server#readme"
+}
