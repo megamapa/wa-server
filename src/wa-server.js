@@ -47,12 +47,12 @@ const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[30m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
+hub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
 //hub.set('msg:5511930141514','{"context":"null","last":"0"}');
 // Subscribe
 hub.subscribe("msg:device_update","msg:san_message", (err, count) => {
   if (err) {
-	console.log('\033[30m'+dte+': \033[31mFailed to subscribe: '+ err.message +'\033[0;0m');
+	console.log('\033[36m'+dte+': \033[31mFailed to subscribe: '+ err.message +'\033[0;0m');
   } 
 });
 
@@ -119,8 +119,8 @@ whatsapp.on('qr', qr => {
 });
 
 whatsapp.on('ready', () => {
-	GetDate().then(dte => {	console.log('\033[30m'+dte+': \033[32mWhatsapp connected.\033[0;0m');
-							console.log('\033[30m'+dte+': \033[32mWaiting clients...\033[0;0m'); });
+	GetDate().then(dte => {	console.log('\033[36m'+dte+': \033[32mWhatsapp connected.\033[0;0m');
+							console.log('\033[36m'+dte+': \033[32mWaiting clients...\033[0;0m'); });
 });
 
 const _bom_x = 1;
@@ -179,8 +179,8 @@ GetDate().then(dte => {
 	// Save start datetime
 	starttime = Date.parse(dte);
 	// Show parameters and waiting clients
-	console.log('\033[30m'+dte+': \033[37m================================');
-	console.log('\033[30m'+dte+': \033[37m' + 'APP : ' + process.title + ' ('+Version+')');
-	console.log('\033[30m'+dte+': \033[37m' + 'IP/Port : WHATSAPP');
-	console.log('\033[30m'+dte+': \033[37m' + 'CPUs: '+ OS.cpus().length);
-	console.log('\033[30m'+dte+': \033[37m================================\033[0;0m');});
+	console.log('\033[36m'+dte+': \033[37m================================');
+	console.log('\033[36m'+dte+': \033[37m' + 'APP : ' + process.title + ' ('+Version+')');
+	console.log('\033[36m'+dte+': \033[37m' + 'IP/Port : WHATSAPP');
+	console.log('\033[36m'+dte+': \033[37m' + 'CPUs: '+ OS.cpus().length);
+	console.log('\033[36m'+dte+': \033[37m================================\033[0;0m');});
