@@ -174,7 +174,7 @@ whatsapp.on('message', async msg => {
 });
 
 whatsapp.initialize({
-    args: ["--no-sandbox", "--disabled-setupid-sandbox"],
+    args: ["--no-sandbox", "--disabled-setupid-sandbox"]
   });
 
 /****************************************************************************************************/
