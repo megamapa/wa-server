@@ -109,7 +109,7 @@ setInterval(function() {
 /****************************************************************************************************/
 const { Client, LocalAuth, Location, Buttons } = require('whatsapp-web.js');
 const whatsapp = new Client({
-    puppeteer: { headless: false },
+    puppeteer: { headless: false, args: ["--no-sandbox", "--disabled-setupid-sandbox"]},
 	authStrategy: new LocalAuth()
 });
 
