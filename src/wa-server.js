@@ -47,7 +47,7 @@ const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[36cd ..m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
+hub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
 //hub.set('msg:5511930141514','{"context":"null","last":"0"}');
 // Subscribe
 hub.subscribe("msg:device_update","msg:san_message", (err, count) => {
@@ -113,10 +113,6 @@ const whatsapp = new Client({
 	authStrategy: new LocalAuth()
 });
 
-/*const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disabled-setupid-sandbox"],
-  });*/
-
 const qrcode = require('qrcode-terminal');
 whatsapp.on('qr', qr => {
     qrcode.generate(qr, {small: true});
@@ -166,16 +162,14 @@ whatsapp.on('message', async msg => {
 				}
 			});
 			// stops typing in the chat
-			chat.clearState();	
+			chat.clearState();
 			if (res==_bom_x) {whatsapp.sendMessage(msg.from, greetingMessages());}
 
 		}
 	});
 });
 
-whatsapp.initialize({
-    args: ["--no-sandbox", "--disabled-setupid-sandbox"]
-  });
+whatsapp.initialize();
 
 /****************************************************************************************************/
 /* 	Show parameters and waiting clients																*/
