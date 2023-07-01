@@ -67,7 +67,7 @@ hub.on("message", (channel, message) => {
 			break;
 
 		case 'msg:san_message' :
-			SendMsg(process.env.WA_chanel, obj.msg);
+			process.env.WA_chanel.forEach(function(item){SendMsg(item, obj.msg)});
 			break;
 	  
   	}
