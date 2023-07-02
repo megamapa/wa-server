@@ -132,7 +132,7 @@ async function SendMsg(number, message) {
 }
 
 whatsapp.on('message', async msg => {
-	// Get sender
+	// Get sender 
 	let num = msg.from.split('@')[0];
 	// Simulates typing in the chat
 	const chat = await msg.getChat();
