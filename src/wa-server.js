@@ -23,14 +23,8 @@ const greetingMessages = () => {
 async function PublishUpdate() {
 	GetDate().then(dte => {
 		let uptime = Date.parse(dte) - starttime;
-		pub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"WHATSAPP","uptime":"'+Math.floor(uptime/60000)+'"}');
+		hub.publish('san:server_update','{"name":"'+process.title+'","version":"'+Version+'","ipport":"WHATSAPP","uptime":"'+Math.floor(uptime/60000)+'"}');
 	});
-}
-
-// Send message to whatsapp
-async function SendMsg(number, message) {
-	let num = number.includes('@c.us') ? number : `${number}@c.us`;
-	whatsapp.sendMessage(num, message);
 }
 
 /****************************************************************************************************/
@@ -40,6 +34,61 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 /****************************************************************************************************/
+/* Open whatsapp instance																			*/
+/****************************************************************************************************/
+const { Client, LocalAuth, Location, Buttons } = require('whatsapp-web.js');
+const whatsapp = new Client({
+    puppeteer: { headless: false, args: ["--no-sandbox", "--disabled-setupid-sandbox"]},
+	authStrategy: new LocalAuth()
+});
+
+const qrcode = require('qrcode-terminal');
+whatsapp.on('qr', qr => {
+    qrcode.generate(qr, {small: true});
+});
+
+whatsapp.on('ready', () => {
+	GetDate().then(dte => {	console.log('\033[36m'+dte+': \033[32mWhatsapp connected.\033[0;0m');
+							console.log('\033[36m'+dte+': \033[32mWaiting clients...\033[0;0m'); });
+});
+
+// Send message to whatsapp
+async function SendMsg(number, msg) {
+	number.split(",").forEach(function(item) {
+		let num = item.includes('@c.us') ? item : `${item}@c.us`;
+		whatsapp.sendMessage(num, msg);
+	});
+}
+
+// Trata as messagens que chegam pelo telefone
+whatsapp.on('message', async msg => {
+	// Pega o numero que enviou
+	let num = msg.from.split('@')[0];
+	// Vefica se o numero e um ADM ou cliente
+
+	// Simula o Digitando...
+	const chat = await msg.getChat();
+	chat.sendStateTyping();
+
+	// Arvore de decisão
+	let words = msg.body.toLowerCase().split(" ");
+	switch (words[0]) {
+		case 'boa' :	
+		case 'bom' :
+		case 'bon' :
+			whatsapp.sendMessage(msg.from, greetingMessages());
+			break;
+		case '#status':
+			hub.publish('san:msg_request','{"number":"'+num+'","msg":"#status"}');
+			break;
+	}
+	// Desliga o Digitando...
+	chat.clearState();
+});
+
+whatsapp.initialize();
+
+/****************************************************************************************************/
 /* Create and open Redis connection																	*/
 /****************************************************************************************************/
 const Redis = require('ioredis');
@@ -47,29 +96,25 @@ const hub = new Redis({host:process.env.RD_host, port:process.env.RD_port, passw
 const pub = new Redis({host:process.env.RD_host, port:process.env.RD_port, password:process.env.RD_pass});
 
 // Updates server status as soon as it successfully connects
-hub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
+pub.on('connect', function () { PublishUpdate(); GetDate().then(dte => {console.log('\033[36m'+dte+': \033[32mHUB connected.\033[0;0m');}); });
 
 // Subscribe
-hub.subscribe("msg:device_update","msg:san_message", (err, count) => {
+
+pub.subscribe("msg:device_update","msg:adm_message", (err, count) => {
   if (err) {
 	console.log('\033[36m'+dte+': \033[31mFailed to subscribe: '+ err.message +'\033[0;0m');
   } 
 });
 
 // Waiting messages
-hub.on("message", (channel, message) => {
+pub.on("message", (channel, message) => {
 	// Converte para objeto
 	let obj = JSON.parse(message);
 	// Envia a msg
 	switch (channel) {
-		case 'msg:device_update' :
-			SendMsg(obj.num, obj.msg);
+		case 'msg:adm_message' :
+			SendMsg(obj.number, obj.msg);
 			break;
-
-		case 'msg:san_message' :
-			process.env.WA_chanel.split(",").forEach(function(item){SendMsg(item, obj.msg)});
-			break;
-	  
   	}
 	// Atualiza contadores
 	msgsout++;
@@ -103,68 +148,6 @@ setInterval(function() {
 				bytserr=0;
 			});
 },60000);
-
-/****************************************************************************************************/
-/* Open whatsapp instance																			*/
-/****************************************************************************************************/
-const { Client, LocalAuth, Location, Buttons } = require('whatsapp-web.js');
-const whatsapp = new Client({
-    puppeteer: { headless: false, args: ["--no-sandbox", "--disabled-setupid-sandbox"]},
-	authStrategy: new LocalAuth()
-});
-
-const qrcode = require('qrcode-terminal');
-whatsapp.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
-});
-
-whatsapp.on('ready', () => {
-	GetDate().then(dte => {	console.log('\033[36m'+dte+': \033[32mWhatsapp connected.\033[0;0m');
-							console.log('\033[36m'+dte+': \033[32mWaiting clients...\033[0;0m'); });
-});
-
-const _bom_x = 1;
-const _oi = 2;
-
-async function SendMsg(number, message) {
-	let num = number.includes('@c.us') ? number : `${number}@c.us`;
-	whatsapp.sendMessage(num, message);
-}
-
-whatsapp.on('message', async msg => {
-	// Get sender 
-	let num = msg.from.split('@')[0];
-	// Simulates typing in the chat
-	const chat = await msg.getChat();
-	chat.sendStateTyping();
-
-	let res = 0;
-	// Check words
-	let words = msg.body.toLowerCase().split(" ");
-	words.map(w => {
-		switch (w) {
-			case 'oi' :
-			case 'ola' :
-			case 'ai' :
-			case 'conseguiu' :
-				 res = _oi;
-				 break;
-
-			case 'boa' :	
-			case 'bom' :
-			case 'bon' :
-				 res = _bom_x;
-				 break;
-	
-		}
-	});	
-	// stops typing in the chat
-	chat.clearState();
-	
-	if (res==_bom_x) {whatsapp.sendMessage(msg.from, greetingMessages());}
-});
-
-whatsapp.initialize();
 
 /****************************************************************************************************/
 /* 	Show parameters and waiting clients																*/
