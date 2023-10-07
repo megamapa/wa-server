@@ -40,7 +40,7 @@ const { Client, LocalAuth, Location, Buttons } = require('whatsapp-web.js');
 const whatsapp = new Client({
     puppeteer: {
         headless: false,
-        executablePath: `${process.env.CHROME_PATH}`,
+        executablePath: '/usr/bin/chromium-browser',
         env: {
           DISPLAY: ':0',
         },
